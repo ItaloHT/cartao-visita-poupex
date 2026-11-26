@@ -1,0 +1,28 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Estudo de cartão · FHE POUPEX</title><style>
+:root{--blue:#103e77;color:#172f46;font:16px/1.45 system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:#f2f6fb}main{max-width:68rem;margin:auto;padding:clamp(1.1rem,4vw,3.2rem)}header{display:flex;align-items:center;gap:1rem;border-bottom:1px solid #c7d4e1;padding-bottom:1.1rem}header b{letter-spacing:.08em}header span{color:#496179}h1{font-size:clamp(2rem,4vw,3.3rem);letter-spacing:-.045em;line-height:1.05;margin:2.4rem 0}section{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1rem,4vw,3rem)}h2{font-size:1.12rem;margin:0 0 1rem}fieldset{border:0;padding:0;margin:0}label{display:block;margin:.7rem 0;font-weight:600}input,select,textarea{display:block;margin:.25rem 0 0;width:100%;font:inherit;background:white;color:#132f4f;border:1px solid #8ba0b5;border-radius:.45rem;padding:.55rem .7rem}input[type=color]{height:2.6rem}details{margin:1rem 0;padding:1rem;background:#fff;border-radius:.6rem}summary{cursor:pointer;font-weight:700}article{background:var(--blue);color:white;border-radius:1.3rem;padding:clamp(1.2rem,4vw,2rem);min-height:17rem;overflow-wrap:anywhere;box-shadow:0 18px 40px #122e4a22}article.center{text-align:center}article.compact{min-height:0;padding:1.25rem}article.compact h3{margin-top:1rem}.brands{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;min-height:2.4rem}.center .brands{justify-content:center}.brands img{max-width:42%;height:2.4rem;object-fit:contain}h3{font-size:clamp(1.5rem,3.5vw,2.4rem);line-height:1.08;margin:2rem 0 .4rem}.contacts{border-top:1px solid #ffffff60;margin-top:1.1rem;padding-top:.75rem}aside p,small{color:#405972}.actions{display:flex;gap:.5rem;flex-wrap:wrap}button{font:inherit;border:0;background:#163e68;color:white;padding:.7rem 1rem;border-radius:.5rem;cursor:pointer}@media(max-width:680px){section{grid-template-columns:1fr}h1{margin:1.5rem 0}}
+</style><main><header><b>FHE POUPEX</b><span>Estudo de layout</span></header><h1>Cartão de visita digital</h1><section><div><h2>Dados do cartão</h2><fieldset id="fields"></fieldset><details open><summary>Ajustes de layout</summary><label>Composição<select id="layout"><option value="">Alinhada à esquerda</option><option value="center">Centralizada</option><option value="compact">Compacta</option></select></label><label>Azul de base<input id="blue" type="color" value="#103e77"></label><label>Assinatura conjunta ou primeira marca<input type="file" accept="image/png,image/svg+xml,image/jpeg" id="logo1"></label><label>Segunda marca (opcional)<input type="file" accept="image/png,image/svg+xml,image/jpeg" id="logo2"></label></details></div><aside><h2>Prévia de composição</h2><article><div class="brands"><b id="placeholder">FHE POUPEX</b><img hidden alt="Marca principal"><img hidden alt="Marca complementar"></div><h3 id="name"></h3><div id="job"></div><div id="unit"></div><div class="contacts"><div id="email"></div><div id="phone"></div></div></article><p>Estudo visual para revisão. A disposição final dos campos depende de cada carteira.</p><label>Sugestões de alteração<textarea id="notes" rows="3" placeholder="Ex.: ampliar a assinatura e aproximar o cargo do nome."></textarea></label><div class="actions"><button id="save">Baixar modelo editado</button></div><small>A cópia HTML inclui os dados, marcas e sugestões desta versão.</small></aside></section></main>
+<script>
+const examples=[['name','Nome','Marina Costa'],['job','Cargo','Analista de Comunicação'],['unit','Unidade','Comunicação'],['email','E-mail','marina@example.org'],['phone','Telefone','(61) 0000-0000']];
+const byId=id=>document.getElementById(id);
+const fields=byId('fields');
+for(const [key,label,value] of examples){
+ let input=byId('f-'+key);
+ if(!input){const wrapper=document.createElement('label');wrapper.textContent=label;input=document.createElement('input');input.id='f-'+key;input.value=value;wrapper.append(input);fields.append(wrapper)}
+ const show=()=>byId(key).textContent=input.value;input.oninput=show;show();
+}
+function styleCard(){document.querySelector('article').className=byId('layout').value;document.documentElement.style.setProperty('--blue',byId('blue').value)}
+byId('layout').onchange=styleCard;byId('blue').oninput=styleCard;styleCard();
+const images=[...document.querySelectorAll('.brands img')];
+images.forEach((img,i)=>byId('logo'+(i+1)).onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const reader=new FileReader();reader.onload=()=>{img.src=reader.result;img.hidden=false;byId('placeholder').hidden=true};reader.readAsDataURL(file);
+});
+byId('save').onclick=()=>{
+ const copy=document.documentElement.cloneNode(true);
+ copy.querySelectorAll('input:not([type=file])').forEach(el=>el.setAttribute('value',byId(el.id).value));
+ copy.querySelectorAll('option').forEach(el=>el.toggleAttribute('selected',el.value===byId('layout').value));
+ copy.querySelector('#notes').textContent=byId('notes').value;
+ const url=URL.createObjectURL(new Blob(['<!doctype html>'+copy.outerHTML],{type:'text/html;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download='cartao-layout.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);
+};
+</script></html>
